@@ -1,13 +1,13 @@
 #include <mutex>
 
-#include "stereo_slam/MapPoint.hpp"
-#include "stereo_slam/Feature.hpp"
+#include "sli_slam/MapPoint.hpp"
+#include "sli_slam/Feature.hpp"
 
 using std::mutex;
 using std::lock_guard;
 
-using stereo_slam::MapPoint;
-using stereo_slam::Feature;
+using sli_slam::MapPoint;
+using sli_slam::Feature;
 
 Vec3 MapPoint::Pos(){
     lock_guard<mutex> lck(data_mutex_);

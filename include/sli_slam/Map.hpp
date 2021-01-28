@@ -1,15 +1,15 @@
-#ifndef STEREO_SLAM_MAP_HPP
-#define STEREO_SLAM_MAP_HPP
+#ifndef SLI_SLAM_MAP_HPP
+#define SLI_SLAM_MAP_HPP
 
 #include <memory>
 #include <mutex>
 #include <unordered_map>
 
-#include "stereo_slam/common.hpp"
-#include "stereo_slam/Frame.hpp"
-#include "stereo_slam/MapPoint.hpp"
+#include "sli_slam/common.hpp"
+#include "sli_slam/Frame.hpp"
+#include "sli_slam/MapPoint.hpp"
 
-namespace stereo_slam{
+namespace sli_slam{
 
 class Map{
 
@@ -47,6 +47,6 @@ private:
     int num_active_keyframes_ = 7; // Number of active keyframe
 };
 
-} // namespace stereo_slam
+} // namespace sli_slam
 
 #endif

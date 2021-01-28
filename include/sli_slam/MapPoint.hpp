@@ -1,13 +1,13 @@
-#ifndef STEREO_SLAM_MAPPOINT_HPP
-#define STEREO_SLAM_MAPPOINT_HPP
+#ifndef SLI_SLAM_MAPPOINT_HPP
+#define SLI_SLAM_MAPPOINT_HPP
 
 #include <memory>
 #include <mutex>
 #include <list>
 
-#include "stereo_slam/common.hpp"
+#include "sli_slam/common.hpp"
 
-namespace stereo_slam{
+namespace sli_slam{
 
 class Feature;
 
@@ -45,6 +45,6 @@ private:
     std::list<std::weak_ptr<Feature>> observations_;
 };
 
-}  // namespace stereo_slam
+}  // namespace sli_slam
 
 #endif

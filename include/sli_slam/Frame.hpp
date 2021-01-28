@@ -1,5 +1,5 @@
-#ifndef STEREO_SLAM_FRAME_HPP
-#define STEREO_SLAM_FRAME_HPP
+#ifndef SLI_SLAM_FRAME_HPP
+#define SLI_SLAM_FRAME_HPP
 
 #include <memory>
 #include <mutex>
@@ -11,9 +11,9 @@
 
 #include <sophus/se3.hpp>
 
-#include "stereo_slam/Feature.hpp"
+#include "sli_slam/Feature.hpp"
 
-namespace stereo_slam{
+namespace sli_slam{
 
 class Feature;
 
@@ -58,6 +58,6 @@ private:
     std::vector<Feature::Ptr> feature_right_;
 };
 
-} // namespace stereo_slam
+} // namespace sli_slam
 
 #endif

@@ -4,8 +4,8 @@
 
 #include <glog/logging.h>
 
-#include "stereo_slam/Map.hpp"
-#include "stereo_slam/Feature.hpp"
+#include "sli_slam/Map.hpp"
+#include "sli_slam/Feature.hpp"
 
 using std::make_pair;
 using std::numeric_limits;
@@ -14,7 +14,7 @@ using std::lock_guard;
 
 using Sophus::SE3d;
 
-using stereo_slam::Map;
+using sli_slam::Map;
 
 void Map::InsertKeyFrame(Frame::Ptr frame){
     current_frame_ = frame;

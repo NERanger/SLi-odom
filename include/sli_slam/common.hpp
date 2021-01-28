@@ -1,5 +1,5 @@
-#ifndef STEREO_SLAM_COMMON_HPP
-#define STEREO_SLAM_COMMON_HPP
+#ifndef SLI_SLAM_COMMON_HPP
+#define SLI_SLAM_COMMON_HPP
 
 // define the commonly included file to avoid a long include list
 #include <Eigen/Core>

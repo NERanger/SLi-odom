@@ -1,5 +1,5 @@
-#ifndef STEREO_SLAM_FEATURE_HPP
-#define STEREO_SLAM_FEATURE_HPP
+#ifndef SLI_SLAM_FEATURE_HPP
+#define SLI_SLAM_FEATURE_HPP
 
 #include <memory>
 
@@ -7,7 +7,7 @@
 
 #include <opencv2/features2d.hpp>
 
-namespace stereo_slam{
+namespace sli_slam{
 
 class Frame;
 class MapPoint;
@@ -36,6 +36,6 @@ private:
 
 };
 
-} // namespace stereo_slam
+} // namespace sli_slam
 
 #endif

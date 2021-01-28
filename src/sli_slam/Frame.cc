@@ -1,6 +1,6 @@
 #include <vector>
 
-#include "stereo_slam/Frame.hpp"
+#include "sli_slam/Frame.hpp"
 
 using std::vector;
 using std::mutex;
@@ -8,8 +8,8 @@ using std::lock_guard;
 
 using Sophus::SE3d;
 
-using stereo_slam::Frame;
-using stereo_slam::Feature;
+using sli_slam::Frame;
+using sli_slam::Feature;
 
 SE3d Frame::Pose(){
     lock_guard<mutex> lck(pose_mutex_);
