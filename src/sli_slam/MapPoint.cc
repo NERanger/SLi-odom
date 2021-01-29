@@ -14,7 +14,7 @@ Vec3 MapPoint::Pos(){
     return pos_;
 }
 
-unsigned long MapPoint::Id(){
+unsigned long MapPoint::Id() const{
     return id_;
 }
 
@@ -23,7 +23,7 @@ void MapPoint::SetPos(const Vec3 &pos){
     pos_ = pos;
 }
 
-int MapPoint::ObservedTimes(){
+int MapPoint::ObservedTimes() const{
     return observed_times_;
 }
 

@@ -16,20 +16,20 @@ SE3d Frame::Pose(){
     return pose_;
 }
 
-void Frame::SetPose(const SE3d &pose){
+void Frame::SetPose(const SE3d &pose) {
     lock_guard<mutex> lck(pose_mutex_);
     pose_ = pose;
 }
 
-unsigned long Frame::KeyFrameId(){
+unsigned long Frame::KeyFrameId() const{
     return keyframe_id_;
 }
 
-vector<Feature::Ptr> Frame::FeatureLeft(){
+vector<Feature::Ptr> Frame::FeatureLeft() const{
     return feature_left_;
 }
 
-vector<Feature::Ptr> Frame::FeatureRight(){
+vector<Feature::Ptr> Frame::FeatureRight() const{
     return feature_right_;
 }
 

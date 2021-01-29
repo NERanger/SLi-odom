@@ -22,11 +22,12 @@ public:
     MapPoint(unsigned long id, Vec3 pos) : id_(id), pos_(pos){}
 
     Vec3 Pos();
-    unsigned long Id();
     void SetPos(const Vec3 &pos);
     void AddObservation(Feature::Ptr feat);
     void RemoveObservation(Feature::Ptr feat);
-    int ObservedTimes();
+    
+    unsigned long Id() const;
+    int ObservedTimes() const;
 
     static MapPoint::Ptr CreateNewMapPoint();
 

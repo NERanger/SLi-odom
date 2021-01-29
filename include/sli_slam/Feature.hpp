@@ -23,7 +23,7 @@ public:
 
     Feature(std::shared_ptr<Frame> frame, const cv::KeyPoint &kp) : frame_(frame), keypoint_pos_(kp){}
 
-    std::weak_ptr<MapPoint> RelatedMapPoint();
+    std::weak_ptr<MapPoint> RelatedMapPoint() const;
 private:
     std::weak_ptr<Frame> frame_;         // Frame with this feature
     std::weak_ptr<MapPoint> map_point_;  // Related map point
