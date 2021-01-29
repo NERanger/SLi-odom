@@ -14,9 +14,7 @@
 #include "sli_slam/Feature.hpp"
 
 namespace sli_slam{
-
-class Feature;
-
+    
 class Frame{
 
 public:
