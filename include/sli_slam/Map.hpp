@@ -5,7 +5,7 @@
 #include <mutex>
 #include <unordered_map>
 
-#include "sli_slam/common.hpp"
+#include "sli_slam/Common.hpp"
 #include "sli_slam/Frame.hpp"
 #include "sli_slam/MapPoint.hpp"
 

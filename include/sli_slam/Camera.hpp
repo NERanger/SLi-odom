@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "sli_slam/common.hpp"
+#include "sli_slam/Common.hpp"
 
 namespace sli_slam{
 

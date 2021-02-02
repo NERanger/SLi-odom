@@ -31,9 +31,11 @@ public:
     void SetPose(const Sophus::SE3d &pose);
     void SetKeyFrame();
 
-    unsigned long KeyFrameId() const;
-    std::vector<Feature::Ptr> FeatureLeft() const;
-    std::vector<Feature::Ptr> FeatureRight() const;
+    unsigned long KeyFrameId() const {return keyframe_id_;}
+    std::vector<Feature::Ptr> FeatureLeft() const {return feature_left_;}
+    std::vector<Feature::Ptr> FeatureRight() const {return feature_right_;}
+    cv::Mat LeftImg() const {return left_img_;}
+    cv::Mat RightImg() const {return right_img_;}
 
     static Ptr CreateFrame();
 

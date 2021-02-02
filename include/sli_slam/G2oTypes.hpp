@@ -27,8 +27,8 @@ public:
     virtual void setToOriginImpl() override;
     virtual void oplusImpl(const double *update) override;
 
-    virtual bool read(std::istream &in) override;
-    virtual bool write(std::ostream &out) const override;
+    virtual bool read(std::istream &in) override {return true;}
+    virtual bool write(std::ostream &out) const override {return true;}
 
 };
 
@@ -40,8 +40,8 @@ public:
     virtual void setToOriginImpl() override;
     virtual void oplusImpl(const double *update) override;
 
-    virtual bool read(std::istream &in) override;
-    virtual bool write(std::ostream &out) const override;
+    virtual bool read(std::istream &in) override {return true;}
+    virtual bool write(std::ostream &out) const override {return true;}
 };
 
 // Unary edge only related with pose
@@ -49,13 +49,14 @@ class EdgeProjectionPoseOnly : public g2o::BaseUnaryEdge<2, Vec2, VertexPose> {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
+    // pos: landmark position
     EdgeProjectionPoseOnly(const Vec3 &pos, const Mat33 &K) : _pos3d(pos), _K(K) {}
 
     virtual void computeError() override;
     virtual void linearizeOplus() override;
 
-    virtual bool read(std::istream &in) override;
-    virtual bool write(std::ostream &out) const override;
+    virtual bool read(std::istream &in) override {return true;}
+    virtual bool write(std::ostream &out) const override {return true;}
 
 private:
     Vec3 _pos3d;
@@ -73,8 +74,8 @@ public:
     virtual void computeError() override;
     virtual void linearizeOplus() override;
 
-    virtual bool read(std::istream &in) override;
-    virtual bool write(std::ostream &out) const override;
+    virtual bool read(std::istream &in) override {return true;}
+    virtual bool write(std::ostream &out) const override {return true;}
 
 private:
     Mat33 _K;

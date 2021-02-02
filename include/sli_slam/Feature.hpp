@@ -21,18 +21,21 @@ public:
 
     Feature() = default;
 
-    Feature(std::shared_ptr<Frame> frame, const cv::KeyPoint &kp) : frame_(frame), keypoint_pos_(kp){}
+    Feature(std::shared_ptr<Frame> frame, const cv::KeyPoint &kp) : frame_(frame), position_(kp){}
 
-    std::weak_ptr<MapPoint> RelatedMapPoint() const;
+    std::weak_ptr<MapPoint> RelatedMapPoint() const {return map_point_;}
+    cv::KeyPoint Position() const {return position_;}
+    bool IsOutlier() const {return is_outlier_;}
+
+    void SetIsOutlier(bool is_outlier) {is_outlier_ = is_outlier;}
 private:
     std::weak_ptr<Frame> frame_;         // Frame with this feature
     std::weak_ptr<MapPoint> map_point_;  // Related map point
 
-    cv::KeyPoint keypoint_pos_;          // keypoint position
+    cv::KeyPoint position_;          // keypoint position
 
     bool is_outlier_ = false;
     bool is_on_left_img_ = true;         // False if on right image
-
 
 };
 

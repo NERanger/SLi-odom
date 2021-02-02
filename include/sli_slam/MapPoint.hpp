@@ -5,7 +5,7 @@
 #include <mutex>
 #include <list>
 
-#include "sli_slam/common.hpp"
+#include "sli_slam/Common.hpp"
 
 namespace sli_slam{
 
@@ -19,15 +19,15 @@ public:
 
     MapPoint() = default;
 
-    MapPoint(unsigned long id, Vec3 pos) : id_(id), pos_(pos){}
+    MapPoint(unsigned long id, Vec3 position) : id_(id), position_(position){}
 
-    Vec3 Pos();
-    void SetPos(const Vec3 &pos);
+    Vec3 Position();  // Postion in world frame
+    void SetPosition(const Vec3 &position);
     void AddObservation(Feature::Ptr feat);
     void RemoveObservation(Feature::Ptr feat);
     
-    unsigned long Id() const;
-    int ObservedTimes() const;
+    unsigned long Id() const {return id_;}
+    int ObservedTimes() const {return observed_times_;}
 
     static MapPoint::Ptr CreateNewMapPoint();
 
@@ -39,7 +39,7 @@ private:
     int observed_times_ = 0;
 
     // Postion in world frame
-    Vec3 pos_ = Vec3::Zero();
+    Vec3 position_ = Vec3::Zero();
 
     std::mutex data_mutex_;
 

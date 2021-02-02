@@ -21,18 +21,6 @@ void Frame::SetPose(const SE3d &pose) {
     pose_ = pose;
 }
 
-unsigned long Frame::KeyFrameId() const{
-    return keyframe_id_;
-}
-
-vector<Feature::Ptr> Frame::FeatureLeft() const{
-    return feature_left_;
-}
-
-vector<Feature::Ptr> Frame::FeatureRight() const{
-    return feature_right_;
-}
-
 Frame::Ptr Frame::CreateFrame(){
     static unsigned long factory_id = 0;
     

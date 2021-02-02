@@ -9,22 +9,14 @@ using std::lock_guard;
 using sli_slam::MapPoint;
 using sli_slam::Feature;
 
-Vec3 MapPoint::Pos(){
+Vec3 MapPoint::Position(){
     lock_guard<mutex> lck(data_mutex_);
-    return pos_;
+    return position_;
 }
 
-unsigned long MapPoint::Id() const{
-    return id_;
-}
-
-void MapPoint::SetPos(const Vec3 &pos){
+void MapPoint::SetPosition(const Vec3 &position){
     lock_guard<mutex> lck(data_mutex_);
-    pos_ = pos;
-}
-
-int MapPoint::ObservedTimes() const{
-    return observed_times_;
+    position_ = position;
 }
 
 void MapPoint::AddObservation(Feature::Ptr feat){

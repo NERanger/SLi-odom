@@ -5,7 +5,7 @@
 
 #include <Eigen/Core>
 
-#include "sli_slam/common.hpp"
+#include "sli_slam/Common.hpp"
 #include "sli_slam/Map.hpp"
 #include "sli_slam/Frame.hpp"
 #include "sli_slam/Camera.hpp"
@@ -28,15 +28,19 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     typedef std::shared_ptr<Frontend> Ptr;
 
-    Frontend() = default;
+    // Customized contructor
+    Frontend();
 
+    // Add a frame and compute pose
     bool AddFrame(Frame::Ptr frame);
-    void SetMap(Map::Ptr map);
-    void SetBackend(Backend::Ptr backend);
-    void SetViewer(Viewer::Ptr viewer);
-    void SetCameras(Camera::Ptr left, Camera::Ptr right);
 
-    FrontendStatus GetStatus() const;
+    void SetMap(Map::Ptr map) {map_ = map;}
+    void SetBackend(Backend::Ptr backend) {backend_ = backend;}
+    void SetViewer(Viewer::Ptr viewer) {viewer_ = viewer;}
+    void SetLeftCam(Camera::Ptr left_cam) {camera_left_ = left_cam;}
+    void SetRightCam(Camera::Ptr right_cam) {camera_right_ = right_cam;}
+
+    FrontendStatus GetStatus() const {return status_;}
 
 private:
     /**
@@ -58,13 +62,13 @@ private:
     int TrackLastFrame();
 
     /**
-     * estimate current frame's pose
+     * Estimate current frame's pose
      * @return num of inliers
      */
     int EstimateCurrentPose();
 
     /**
-     * set current frame as a keyframe and insert it into backend
+     * Set current frame as a keyframe and insert it into backend
      * @return true if success
      */
     bool InsertKeyframe();
@@ -131,7 +135,7 @@ private:
     int num_features_needed_for_keyframe_ = 80;
 
     // utilities
-    cv::Ptr<cv::GFTTDetector> gftt_;  // feature detector in opencv
+    cv::Ptr<cv::GFTTDetector> gftt_detector_;  // feature detector in opencv
 };
 
 } // namespace sli_slam

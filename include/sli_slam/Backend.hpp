@@ -6,7 +6,7 @@
 #include <condition_variable>
 #include <atomic>
 
-#include "sli_slam/common.hpp"
+#include "sli_slam/Common.hpp"
 #include "sli_slam/Frame.hpp"
 #include "sli_slam/Map.hpp"
 #include "sli_slam/Camera.hpp"

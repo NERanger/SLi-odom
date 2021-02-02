@@ -15,13 +15,6 @@ void VertexPose::oplusImpl(const double *update){
     _estimate = Sophus::SE3d::exp(update_eigen) * _estimate;
 }
 
-bool VertexPose::read(std::istream &in){ 
-    return true; 
-}
-bool VertexPose::write(std::ostream &out) const {
-    return true; 
-}
-
 void VertexXYZ::setToOriginImpl(){
     _estimate = Vec3::Zero();
 }
@@ -30,13 +23,6 @@ void VertexXYZ::oplusImpl(const double *update){
     _estimate[0] += update[0];
     _estimate[1] += update[1];
     _estimate[2] += update[2];
-}
-
-bool VertexXYZ::read(std::istream &in){ 
-    return true; 
-}
-bool VertexXYZ::write(std::ostream &out) const {
-    return true; 
 }
 
 void EdgeProjectionPoseOnly::computeError(){
@@ -62,13 +48,6 @@ void EdgeProjectionPoseOnly::linearizeOplus(){
         -fx * Zinv              , 0                      , fx * X * Zinv2     , fx * X * Y * Zinv2,
         -fx - fx * X * X * Zinv2, fx * Y * Zinv          , 0                  , -fy * Zinv,
         fy * Y * Zinv2          , fy + fy * Y * Y * Zinv2, -fy * X * Y * Zinv2, -fy * X * Zinv;
-}
-
-bool EdgeProjectionPoseOnly::read(std::istream &in){ 
-    return true; 
-}
-bool EdgeProjectionPoseOnly::write(std::ostream &out) const {
-    return true; 
 }
 
 void EdgeProjection::computeError(){
@@ -100,11 +79,4 @@ void EdgeProjection::linearizeOplus(){
 
     _jacobianOplusXj = _jacobianOplusXi.block<2, 3>(0, 0) *
                         _cam_ext.rotationMatrix() * T.rotationMatrix();
-}
-
-bool EdgeProjection::read(std::istream &in){ 
-    return true; 
-}
-bool EdgeProjection::write(std::ostream &out) const {
-    return true; 
 }
