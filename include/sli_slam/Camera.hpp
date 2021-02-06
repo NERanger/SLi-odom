@@ -17,7 +17,7 @@ public:
     Camera(double fx, double fy, double cx, double cy, double baseline,
            const Sophus::SE3d &pose);
 
-    Sophus::SE3d Pose() const;
+    Sophus::SE3d Pose() const {return pose_;}
     Mat33 GetIntrinsicMatrix() const;
 
     // Coordinate transform: world, camera, pixel

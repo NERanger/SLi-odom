@@ -30,3 +30,10 @@ Frame::Ptr Frame::CreateFrame(){
 
     return new_frame;
 }
+
+void Frame::SetKeyFrame(){
+    static unsigned long keyframe_factory_id = 0;
+    is_key_frame_ = true;
+    keyframe_id_ = keyframe_factory_id;
+    keyframe_factory_id += 1;
+}

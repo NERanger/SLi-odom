@@ -21,7 +21,7 @@ void MapPoint::SetPosition(const Vec3 &position){
 
 void MapPoint::AddObservation(Feature::Ptr feat){
     lock_guard<mutex> lck(data_mutex_);
-    observations_.emplace_back(feat);
+    observations_.push_back(feat);
     ++observed_times_;
 }
 
