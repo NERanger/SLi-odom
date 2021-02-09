@@ -26,6 +26,8 @@ public:
     void AddObservation(Feature::Ptr feat);
     void RemoveObservation(Feature::Ptr feat);
     
+    std::list<std::weak_ptr<Feature>> Observations();
+    bool IsOutlier() const {return is_outlier_;}
     unsigned long Id() const {return id_;}
     int ObservedTimes() const {return observed_times_;}
 

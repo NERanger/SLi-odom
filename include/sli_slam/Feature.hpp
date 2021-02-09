@@ -24,6 +24,7 @@ public:
     Feature(std::shared_ptr<Frame> frame, const cv::KeyPoint &kp) : frame_(frame), position_(kp){}
 
     std::weak_ptr<MapPoint> RelatedMapPoint() const {return map_point_;}
+    std::weak_ptr<Frame> RelatedFrame() const {return frame_;}
     cv::KeyPoint Position() const {return position_;}
     bool IsOutlier() const {return is_outlier_;}
     bool IsOnLeftImg() const {return is_on_left_img_;}
@@ -31,6 +32,7 @@ public:
     void SetRelatedMapPoint(MapPoint::Ptr map_point) {map_point_ = map_point;}
     void SetIsOutlier(bool is_outlier) {is_outlier_ = is_outlier;}
     void SetIsOnLeftImg(bool is_on_left_img) {is_on_left_img_ = is_on_left_img;}
+
 private:
     std::weak_ptr<Frame> frame_;         // Frame with this feature
     std::weak_ptr<MapPoint> map_point_;  // Related map point

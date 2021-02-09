@@ -5,6 +5,8 @@
 
 using std::mutex;
 using std::lock_guard;
+using std::list;
+using std::weak_ptr;
 
 using sli_slam::MapPoint;
 using sli_slam::Feature;
@@ -12,6 +14,11 @@ using sli_slam::Feature;
 Vec3 MapPoint::Position(){
     lock_guard<mutex> lck(data_mutex_);
     return position_;
+}
+
+list<weak_ptr<Feature>> MapPoint::Observations(){
+    lock_guard<mutex> lck(data_mutex_);
+    return observations_;
 }
 
 void MapPoint::SetPosition(const Vec3 &position){
