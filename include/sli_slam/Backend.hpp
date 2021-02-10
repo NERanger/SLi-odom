@@ -26,8 +26,9 @@ public:
     Backend();
 
     // Set left and right camera, used for obtain intrinsics & extrinsics
-    void SetCamera(Camera::Ptr left_cam, Camera::Ptr right_cam);
-    void SetMap(Map::Ptr map);
+    void SetLeftCam(Camera::Ptr left_cam) {cam_left_ = left_cam;}
+    void SetRightCam(Camera::Ptr right_cam) {cam_right_ = right_cam;}
+    void SetMap(Map::Ptr map) {map_ = map;};
     
     // Trigger map update and start optimization
     void UpdateMap();
