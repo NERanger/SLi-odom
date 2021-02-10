@@ -33,8 +33,8 @@ public:
 
     unsigned long FrameId() const {return id_;}
     unsigned long KeyFrameId() const {return keyframe_id_;}
-    std::vector<Feature::Ptr> FeatureLeft() const {return feature_left_;}
-    std::vector<Feature::Ptr> FeatureRight() const {return feature_right_;}
+    std::vector<Feature::Ptr> &FeatureLeft() {return feature_left_;}
+    std::vector<Feature::Ptr> &FeatureRight() {return feature_right_;}
     cv::Mat LeftImg() const {return left_img_;}
     cv::Mat RightImg() const {return right_img_;}
 

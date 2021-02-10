@@ -29,7 +29,7 @@ using sli_slam::Frame;
 
 bool Dataset::Init(){
     // Read camera intrinsics and extrinsics
-    ifstream fin(dataset_path_ + "calib.txt");
+    ifstream fin(dataset_path_ + "/calib.txt");
     if(!fin){
         LOG(ERROR) << "Cannot find " << dataset_path_ << "/calib.txt";
         return false;

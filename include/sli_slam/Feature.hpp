@@ -7,6 +7,8 @@
 
 #include <opencv2/features2d.hpp>
 
+#include "sli_slam/MapPoint.hpp"
+
 namespace sli_slam{
 
 class Frame;

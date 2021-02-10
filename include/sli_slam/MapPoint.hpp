@@ -23,8 +23,8 @@ public:
 
     Vec3 Position();  // Postion in world frame
     void SetPosition(const Vec3 &position);
-    void AddObservation(Feature::Ptr feat);
-    void RemoveObservation(Feature::Ptr feat);
+    void AddObservation(std::shared_ptr<Feature> feat);
+    void RemoveObservation(std::shared_ptr<Feature> feat);
     
     std::list<std::weak_ptr<Feature>> Observations();
     bool IsOutlier() const {return is_outlier_;}

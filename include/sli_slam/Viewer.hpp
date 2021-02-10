@@ -25,7 +25,7 @@ public:
     // Launch visualization thread and pending
     Viewer();
 
-    void SetMap(Map::Ptr map);
+    void SetMap(Map::Ptr map){map_ = map;}
     void AddCurrentFrame(Frame::Ptr current_frame);
     void UpdateMap();
 

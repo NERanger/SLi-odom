@@ -34,7 +34,7 @@ using sli_slam::ToVec2;
 
 Backend::Backend(){
     backend_running_.store(true);
-    backend_thread_ = thread(bind(&BackendLoop, this));
+    backend_thread_ = thread(bind(&Backend::BackendLoop, this));
 }
 
 void Backend::UpdateMap(){

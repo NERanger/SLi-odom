@@ -1,6 +1,8 @@
 #include <vector>
 #include <sophus/se3.hpp>
 
+#include <glog/logging.h>
+
 #include "sli_slam/Common.hpp"
 #include "sli_slam/Algorithm.hpp"
 
@@ -32,10 +34,11 @@ bool sli_slam::Triangulation(const vector<SE3d> &poses,
     BDCSVD<MatrixXd> svd = A.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV);
     pt_world = (svd.matrixV().col(3) / svd.matrixV()(3, 3)).head<3>();
 
+    // std::cout << svd.singularValues() << std::endl;
     if (svd.singularValues()[3] / svd.singularValues()[2] < 1e-2) {
-        // Bad solution, discard
-        return false;
+        // ??
+        return true;
     }
-    
-    return true;
+
+    return false;
 }

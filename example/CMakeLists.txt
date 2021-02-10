@@ -1,0 +1,2 @@
+add_executable(run_kitti_stereo run_kitti_stereo.cc)
+target_link_libraries(run_kitti_stereo sli_slam ${THIRD_PARTY_LIBS})
