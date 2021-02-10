@@ -38,6 +38,9 @@ public:
     cv::Mat LeftImg() const {return left_img_;}
     cv::Mat RightImg() const {return right_img_;}
 
+    void SetLeftImg(cv::Mat &img) {left_img_ = img;}
+    void SetRightImg(cv::Mat &img) {right_img_ = img;}
+
     static Ptr CreateFrame();
 
 private:
