@@ -114,10 +114,16 @@ void Map::RemoveOldKeyframe(){
             mp->RemoveObservation(feat);
         }
     }
+
     for(auto feat : frame_to_remove->FeatureRight()){
+        if(feat == nullptr){
+            continue;
+        }
+
         MapPoint::Ptr mp = feat->RelatedMapPoint().lock();
         if(mp){
             mp->RemoveObservation(feat);
+        }else{
         }
     }
 

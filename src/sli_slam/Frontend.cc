@@ -317,7 +317,6 @@ int Frontend::DetectFeatures(){
 int Frontend::FindFeaturesInRight(){
     // Use LK optical flow to estimate points in the right image
     vector<Point2f> kps_left, kps_right;
-    LOG(INFO) << "Left feat size " << current_frame_->FeatureLeft().size();
     for(auto &kp : current_frame_->FeatureLeft()){
         kps_left.push_back(kp->Position().pt);
         auto mp = kp->RelatedMapPoint().lock();
@@ -334,17 +333,10 @@ int Frontend::FindFeaturesInRight(){
 
     vector<uchar> status;
     Mat error;
-    LOG(INFO) << "Prepare Optical flow";
-    LOG(INFO) << "LeftImg size " << current_frame_->LeftImg().size;
-    LOG(INFO) << "RightImg size " << current_frame_->RightImg().size;
-    LOG(INFO) << "kps_left size " << kps_left.size();
-    LOG(INFO) << "kps_right size " << kps_right.size();
     calcOpticalFlowPyrLK(current_frame_->LeftImg(), current_frame_->RightImg(), 
         kps_left, kps_right, status, error, Size(11, 11), 3,
         TermCriteria(TermCriteria::COUNT + TermCriteria::EPS, 30, 0.01),
         cv::OPTFLOW_USE_INITIAL_FLOW);
-
-    LOG(INFO) << "Optical flow done";
 
     int num_good_pts = 0;
     for(size_t i = 0; i < status.size(); ++i){
