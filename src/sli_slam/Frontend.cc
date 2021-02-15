@@ -132,6 +132,7 @@ int Frontend::TrackLastFrame(){
         if(status[i]){
             KeyPoint kp(kps_current[i], 7);
             Feature::Ptr feature(new Feature(current_frame_, kp));
+            feature->SetRelatedMapPoint(last_frame_->FeatureLeft()[i]->RelatedMapPoint());
             current_frame_->FeatureLeft().push_back(feature);
             num_good_pts += 1;
         }
@@ -168,9 +169,20 @@ int Frontend::EstimateCurrentPose(){
     int index = 1;
     vector<EdgeProjectionPoseOnly *> edges;
     vector<Feature::Ptr> features;
+
+    // LOG(INFO) << "<EstimateCurrentPose> Current frame left feature size: " 
+    //           << current_frame_->FeatureLeft().size();
+
     for(size_t i = 0; i < current_frame_->FeatureLeft().size(); ++i){
-        MapPoint::Ptr mp = current_frame_->FeatureLeft()[i]->RelatedMapPoint().lock();
+        auto mp = current_frame_->FeatureLeft()[i]->RelatedMapPoint().lock();
+        
+        // LOG(INFO) << "<EstimateCurrentPose> " << i << "th feature: "
+        //           << current_frame_->FeatureLeft()[i]->Position().pt;
+
+        // LOG(INFO) << "<EstimateCurrentPose> " << i << "th feature related map point use count: "
+        //           << current_frame_->FeatureLeft()[i]->RelatedMapPoint().use_count();
         if(mp){
+            // LOG(INFO) << "<EstimateCurrentPose> mappoint found";
             features.push_back(current_frame_->FeatureLeft()[i]);
 
             EdgeProjectionPoseOnly *edge = new EdgeProjectionPoseOnly(mp->Position(), K);
@@ -387,6 +399,9 @@ int Frontend::TriangulateNewPoints(){
                 current_frame_->FeatureLeft()[i]->SetRelatedMapPoint(new_map_point);
                 current_frame_->FeatureRight()[i]->SetRelatedMapPoint(new_map_point);
 
+                // LOG(INFO) << "<TriangulateNewPoints> " << i << "th feature related map point use count: "
+                //           << current_frame_->FeatureLeft()[i]->RelatedMapPoint().use_count();
+
                 map_->InsertMapPoint(new_map_point);
                 cnt_triangulated_pts += 1;
             }
@@ -463,6 +478,6 @@ bool Frontend::BuildInitMap(){
 
 bool Frontend::Reset(){
     // TODO
-    LOG(INFO) << "NANI!? Reset is not implemented yet";
+    LOG(FATAL) << "NANI!? Reset is not implemented yet";
     return true;
 }

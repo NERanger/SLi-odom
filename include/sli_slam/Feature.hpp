@@ -32,6 +32,7 @@ public:
     bool IsOnLeftImg() const {return is_on_left_img_;}
 
     void SetRelatedMapPoint(MapPoint::Ptr map_point) {map_point_ = map_point;}
+    void SetRelatedMapPoint(std::weak_ptr<MapPoint> map_point) {map_point_ = map_point;}
     void SetIsOutlier(bool is_outlier) {is_outlier_ = is_outlier;}
     void SetIsOnLeftImg(bool is_on_left_img) {is_on_left_img_ = is_on_left_img;}
 
