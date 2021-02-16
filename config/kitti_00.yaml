@@ -17,3 +17,8 @@ num_features_tracking: 50
 # 0: false
 # 1: true
 save_trajectory: 1
+
+# Enable data visulization
+# 0: false
+# 1: true
+enable_viewer: 0

@@ -33,7 +33,6 @@ bool VisualOdometry::Init(){
     frontend_ = Frontend::Ptr(new Frontend);
     backend_ = Backend::Ptr(new Backend);
     map_ = Map::Ptr(new Map);
-    viewer_ = Viewer::Ptr(new Viewer);
 
     frontend_->SetBackend(backend_);
     frontend_->SetMap(map_);
@@ -45,7 +44,11 @@ bool VisualOdometry::Init(){
     backend_->SetLeftCam(dataset_->GetCameraById(0));
     backend_->SetRightCam(dataset_->GetCameraById(1));
 
-    viewer_->SetMap(map_);
+    enable_viewer_ = Config::Get<int>("enable_viewer");
+    if(enable_viewer_){
+        viewer_ = Viewer::Ptr(new Viewer);
+        viewer_->SetMap(map_);
+    }
 
     record_trajectory_ = Config::Get<int>("save_trajectory");
     if(record_trajectory_){
@@ -85,14 +88,18 @@ bool VisualOdometry::Step(){
     milliseconds time_used = duration_cast<milliseconds>(t2 - t1);
     LOG(INFO) << "VO time cost: " << time_used.count() << " milliseconds.";
 
-    SaveTrajectory(frontend_->GetCurrentPose());
+    if(record_trajectory_){
+        SaveTrajectory(frontend_->GetCurrentPose());
+    }
     
     return if_success;
 }
 
 bool VisualOdometry::SaveTrajectory(Sophus::SE3d pose){
-    Mat34 m = pose.matrix3x4();
+    Mat44 m = pose.matrix();
     out_file_ << m(0, 0) << " " << m(0, 1) << " " << m(0, 2) << " " << m(0, 3) << " "
               << m(1, 0) << " " << m(1, 1) << " " << m(1, 2) << " " << m(1, 3) << " "
-              << m(2, 0) << " " << m(2, 1) << " " << m(2, 2) << " " << m(2, 3) << endl; 
+              << m(2, 0) << " " << m(2, 1) << " " << m(2, 2) << " " << m(2, 3) << endl;
+
+    return true;
 }

@@ -53,10 +53,12 @@ private:
     bool record_trajectory_ = false;
     std::ofstream out_file_;
 
+    bool enable_viewer_ = false;
+    Viewer::Ptr viewer_ = nullptr;
+
     Frontend::Ptr frontend_ = nullptr;
     Backend::Ptr backend_ = nullptr;
     Map::Ptr map_ = nullptr;
-    Viewer::Ptr viewer_ = nullptr;
 
     // Dataset
     Dataset::Ptr dataset_ = nullptr;
