@@ -42,6 +42,8 @@ public:
 
     FrontendStatus GetStatus() const {return status_;}
 
+    Sophus::SE3d GetCurrentPose();
+
 private:
     /**
      * Track in normal mode

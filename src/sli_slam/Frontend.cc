@@ -170,19 +170,10 @@ int Frontend::EstimateCurrentPose(){
     vector<EdgeProjectionPoseOnly *> edges;
     vector<Feature::Ptr> features;
 
-    // LOG(INFO) << "<EstimateCurrentPose> Current frame left feature size: " 
-    //           << current_frame_->FeatureLeft().size();
-
     for(size_t i = 0; i < current_frame_->FeatureLeft().size(); ++i){
         auto mp = current_frame_->FeatureLeft()[i]->RelatedMapPoint().lock();
         
-        // LOG(INFO) << "<EstimateCurrentPose> " << i << "th feature: "
-        //           << current_frame_->FeatureLeft()[i]->Position().pt;
-
-        // LOG(INFO) << "<EstimateCurrentPose> " << i << "th feature related map point use count: "
-        //           << current_frame_->FeatureLeft()[i]->RelatedMapPoint().use_count();
         if(mp){
-            // LOG(INFO) << "<EstimateCurrentPose> mappoint found";
             features.push_back(current_frame_->FeatureLeft()[i]);
 
             EdgeProjectionPoseOnly *edge = new EdgeProjectionPoseOnly(mp->Position(), K);
@@ -466,6 +457,10 @@ bool Frontend::BuildInitMap(){
               << " map points.";
 
     return true;
+}
+
+SE3d Frontend::GetCurrentPose(){
+    return current_frame_->Pose();
 }
 
 bool Frontend::Reset(){

@@ -20,7 +20,7 @@ public:
     // access the parameter values
     template <typename T>
     static T Get(const std::string &key) {
-        return T(config_->file_[key]);
+        return static_cast<T>(config_->file_[key]);
     }
     
 private:

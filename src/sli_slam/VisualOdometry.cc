@@ -1,10 +1,17 @@
 #include <chrono>
+#include <string>
+#include <fstream>
+#include <iomanip>
 
 #include <glog/logging.h>
 
 #include "sli_slam/VisualOdometry.hpp"
 #include "sli_slam/Config.hpp"
 
+using std::string;
+using std::ofstream;
+using std::endl;
+using std::fixed;
 using std::chrono::duration;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
@@ -40,6 +47,15 @@ bool VisualOdometry::Init(){
 
     viewer_->SetMap(map_);
 
+    record_trajectory_ = Config::Get<int>("save_trajectory");
+    if(record_trajectory_){
+        out_file_ = ofstream("EstimatedTrajectory.txt");
+        if(!out_file_.is_open()){
+            return false;
+        }
+        out_file_ << fixed;
+    }
+
     return true;
 }
 
@@ -68,6 +84,15 @@ bool VisualOdometry::Step(){
     steady_clock::time_point t2 = steady_clock::now();
     milliseconds time_used = duration_cast<milliseconds>(t2 - t1);
     LOG(INFO) << "VO time cost: " << time_used.count() << " milliseconds.";
+
+    SaveTrajectory(frontend_->GetCurrentPose());
     
     return if_success;
+}
+
+bool VisualOdometry::SaveTrajectory(Sophus::SE3d pose){
+    Mat34 m = pose.matrix3x4();
+    out_file_ << m(0, 0) << " " << m(0, 1) << " " << m(0, 2) << " " << m(0, 3) << " "
+              << m(1, 0) << " " << m(1, 1) << " " << m(1, 2) << " " << m(1, 3) << " "
+              << m(2, 0) << " " << m(2, 1) << " " << m(2, 2) << " " << m(2, 3) << endl; 
 }

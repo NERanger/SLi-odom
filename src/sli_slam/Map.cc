@@ -123,7 +123,6 @@ void Map::RemoveOldKeyframe(){
         MapPoint::Ptr mp = feat->RelatedMapPoint().lock();
         if(mp){
             mp->RemoveObservation(feat);
-        }else{
         }
     }
 

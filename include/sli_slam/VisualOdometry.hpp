@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <fstream>
 
 #include "sli_slam/Backend.hpp"
 #include "sli_slam/Common.hpp"
@@ -39,8 +40,18 @@ public:
     FrontendStatus GetFrontendStatus() const {return frontend_->GetStatus();}
 
 private:
+
+    /**
+     * @return true if success
+     */
+    bool SaveTrajectory(Sophus::SE3d pose);
+
     bool inited_ = false;
+
     std::string config_file_path_;
+
+    bool record_trajectory_ = false;
+    std::ofstream out_file_;
 
     Frontend::Ptr frontend_ = nullptr;
     Backend::Ptr backend_ = nullptr;
