@@ -36,7 +36,6 @@ bool VisualOdometry::Init(){
 
     frontend_->SetBackend(backend_);
     frontend_->SetMap(map_);
-    frontend_->SetViewer(viewer_);
     frontend_->SetLeftCam(dataset_->GetCameraById(0));
     frontend_->SetRightCam(dataset_->GetCameraById(1));
 
@@ -48,6 +47,8 @@ bool VisualOdometry::Init(){
     if(enable_viewer_){
         viewer_ = Viewer::Ptr(new Viewer);
         viewer_->SetMap(map_);
+
+        frontend_->SetViewer(viewer_);
     }
 
     record_trajectory_ = Config::Get<int>("save_trajectory");
@@ -70,7 +71,10 @@ void VisualOdometry::Run(){
     }
 
     backend_->Stop();
-    viewer_->Close();
+
+    if(enable_viewer_){
+        viewer_->Close();
+    }
 
     LOG(INFO) << "VO exit";
 }

@@ -43,7 +43,7 @@ int main(int argc, char **argv){
     cout << "Loading estimated... Done" << endl;
     
     assert(!groundtruth.empty() && !estimated.empty());
-    assert(groundtruth.size() == estimated.size());
+    //assert(groundtruth.size() == estimated.size());
 
     // compute rmse
     double rmse = 0;
