@@ -44,7 +44,7 @@ private:
     Frame::Ptr current_frame_ = nullptr;
 
     // Setting
-    int num_active_keyframes_ = 70; // Number of active keyframe
+    int num_active_keyframes_ = 7; // Number of active keyframe
 };
 
 } // namespace sli_slam

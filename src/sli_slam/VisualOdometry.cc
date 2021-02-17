@@ -12,6 +12,7 @@ using std::string;
 using std::ofstream;
 using std::endl;
 using std::fixed;
+using std::setprecision;
 using std::chrono::duration;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
@@ -57,6 +58,7 @@ bool VisualOdometry::Init(){
         if(!out_file_.is_open()){
             return false;
         }
+        out_file_ << fixed << setprecision(9);
     }
 
     return true;

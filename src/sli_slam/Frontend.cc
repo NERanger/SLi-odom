@@ -80,13 +80,13 @@ bool Frontend::Track(){
     tracking_inliers_ = EstimateCurrentPose();
 
     if (tracking_inliers_ > num_features_tracking_) {
-        // tracking good
+        // Tracking good
         status_ = FrontendStatus::kTrackingGood;
     } else if (tracking_inliers_ > num_features_tracking_bad_) {
-        // tracking bad
+        // Tracking bad
         status_ = FrontendStatus::kTrackingBad;
     } else {
-        // lost
+        // Lost
         status_ = FrontendStatus::kTrackingLost;
     }
 

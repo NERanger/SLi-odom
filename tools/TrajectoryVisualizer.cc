@@ -26,10 +26,15 @@ using Sophus::SE3d;
 typedef vector<SE3d, Eigen::aligned_allocator<SE3d>> TrajectoryType;
 
 TrajectoryType ReadTrajectory(const string &path);
+double ComputeRTE(SE3d gt, SE3d esti, SE3d last_gt, SE3d last_esti);
+double ComputeRPE(SE3d gt, SE3d esti, SE3d last_gt, SE3d last_esti);
 void DrawTrajectory(const TrajectoryType &gt, const TrajectoryType &esti);
+void ToKittiTrajectoryFormat(TrajectoryType &esti);
 
-DEFINE_string(gt, "./config/default.yaml", "groundtruth file path");
-DEFINE_string(esti, "./config/default.yaml", "estimated file path");
+DEFINE_string(gt, "./dataset/groundtruth.txt", "groundtruth file path");
+DEFINE_string(esti, "./dataset/estimated.txt", "estimated file path");
+
+DEFINE_bool(fmt_cvt, false, "If convert to kitti format");
 
 int main(int argc, char **argv){
     google::ParseCommandLineFlags(&argc, &argv, true);
@@ -43,7 +48,12 @@ int main(int argc, char **argv){
     cout << "Loading estimated... Done" << endl;
     
     assert(!groundtruth.empty() && !estimated.empty());
-    //assert(groundtruth.size() == estimated.size());
+    assert(groundtruth.size() == estimated.size());
+
+    if(FLAGS_fmt_cvt){
+        cout << "Convert to KITTI format" << endl;
+        ToKittiTrajectoryFormat(estimated);
+    }
 
     // compute rmse
     double rmse = 0;
@@ -54,13 +64,20 @@ int main(int argc, char **argv){
     }
     rmse = rmse / double(estimated.size());
     rmse = sqrt(rmse);
-    cout << "RMSE = " << rmse << endl;
+    cout << "Absolute trajectory error (RMSE) = " << rmse << endl;
 
     DrawTrajectory(groundtruth, estimated);
     
     return EXIT_SUCCESS;
 }
 
+void ToKittiTrajectoryFormat(TrajectoryType &esti){
+    SE3d Two = esti[0].inverse();
+    for(auto &p : esti){
+        p = p*Two;
+        p = p.inverse();
+    }
+}
 
 TrajectoryType ReadTrajectory(const string &path) {
     ifstream fin(path);
@@ -96,6 +113,28 @@ TrajectoryType ReadTrajectory(const string &path) {
     return trajectory;
 }
 
+
+// Compute relative translation error
+double ComputeRTE(SE3d gt, SE3d esti, SE3d last_gt, SE3d last_esti){
+    SE3d e_gt = last_gt.inverse() * gt;
+    SE3d e_esti = last_esti.inverse() * last_esti;
+
+    Vector3d t_gt = e_gt.translation();
+    Vector3d t_esti = e_esti.translation();
+
+    double e_x = t_gt[0] - t_esti[0];
+    double e_y = t_gt[1] - t_esti[1];
+    double e_z = t_gt[2] - t_esti[2];
+
+    return sqrt(e_x*e_x + e_y*e_y + e_z*e_z);
+}
+
+// Compute relative pose error
+double ComputeRPE(SE3d gt, SE3d esti, SE3d last_gt, SE3d last_esti){
+    double e = ((last_gt.inverse() * gt).inverse() * (last_esti.inverse() * esti)).log().norm();
+    return e*e;
+}
+
 void DrawTrajectory(const TrajectoryType &gt, const TrajectoryType &esti){
     // Create pangolin window and plot trajectory
     pangolin::CreateWindowAndBind("Trajectory Viewer", 1024, 768);
@@ -104,13 +143,31 @@ void DrawTrajectory(const TrajectoryType &gt, const TrajectoryType &esti){
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     pangolin::OpenGlRenderState s_cam(
-        pangolin::ProjectionMatrix(1024, 768, 500, 500, 512, 389, 0.1, 1000),
-        pangolin::ModelViewLookAt(0, -0.1, -1.8, 0, 0, 0, 0.0, -1.0, 0.0));
+        pangolin::ProjectionMatrix(640, 480, 420, 420, 320, 240, 0.01, 10000),
+        pangolin::ModelViewLookAt(0, -0.1, -1.8, 0, 0, 0, pangolin::AxisZ));
 
     pangolin::View &d_cam = pangolin::CreateDisplay()
-        .SetBounds(0.0, 1.0, pangolin::Attach::Pix(175), 1.0, -1024.0f / 768.0f)
+        .SetAspect(640.0f/480.0f)
         .SetHandler(new pangolin::Handler3D(s_cam));
 
+    pangolin::DataLog log;
+
+    vector<string> labels;
+    labels.push_back(string("Relative Translation Error(meter)"));
+    // labels.push_back(string("Relative Pose Error"));
+    log.SetLabels(labels);
+
+    pangolin::Plotter plotter(&log, 0, 600, -1, 2.5);
+    plotter.SetAspect(640.0f/480.0f);
+    plotter.Track("$i");
+
+    pangolin::Display("multi")
+        .SetBounds(0.0, 1.0, 0.0, 1.0)
+        .SetLayout(pangolin::LayoutEqual)
+        .AddDisplay(d_cam)
+        .AddDisplay(plotter);
+
+    size_t vis_idx = 1;
     while (pangolin::ShouldQuit() == false){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -118,7 +175,7 @@ void DrawTrajectory(const TrajectoryType &gt, const TrajectoryType &esti){
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         glLineWidth(2);
-        for (size_t i = 0; i < gt.size() - 1; i++) {
+        for (size_t i = 0; i < vis_idx; i++) {
             glColor3f(0.0f, 0.0f, 1.0f);  // Blue for ground truth
             glBegin(GL_LINES);
             auto p1 = gt[i], p2 = gt[i + 1];
@@ -127,7 +184,7 @@ void DrawTrajectory(const TrajectoryType &gt, const TrajectoryType &esti){
             glEnd();
         }
 
-        for (size_t i = 0; i < esti.size() - 1; i++) {
+        for (size_t i = 0; i < vis_idx; i++) {
             glColor3f(1.0f, 0.0f, 0.0f);  // Red for estimated
             glBegin(GL_LINES);
             auto p1 = esti[i], p2 = esti[i + 1];
@@ -136,7 +193,15 @@ void DrawTrajectory(const TrajectoryType &gt, const TrajectoryType &esti){
             glEnd();
         }
 
+        plotter.Activate(s_cam);
+
+        if(vis_idx < gt.size()){
+            log.Log(ComputeRTE(gt[vis_idx], esti[vis_idx], gt[vis_idx - 1], esti[vis_idx - 1]));
+        }
+
         pangolin::FinishFrame();
         usleep(5000);   // sleep 5 ms
+
+        vis_idx += 1;
     }
 }
