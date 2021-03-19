@@ -13,11 +13,18 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 ############### dependencies ######################
 
 # Eigen
-include_directories("/home/artinx001/3rdparty/eigen-3.3.9")
+# include_directories("/home/artinx001/3rdparty/eigen-3.3.9")
+find_package(Eigen3 REQUIRED NO_MODULE)
 
 # OpenCV
 find_package(OpenCV 3.4 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
+
+# PCL
+find_package(PCL 1.2 REQUIRED)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
 # pangolin
 find_package(Pangolin REQUIRED)
@@ -57,7 +64,8 @@ set(THIRD_PARTY_LIBS
     ${GFLAGS_LIBRARIES}
     pthread
     ${CSPARSE_LIBRARY}
-    Sophus::Sophus)
+    Sophus::Sophus
+    Eigen3::Eigen)
 
 enable_testing()
 
