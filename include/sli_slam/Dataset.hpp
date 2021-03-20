@@ -5,6 +5,9 @@
 #include <memory>
 #include <vector>
 
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
 #include "sli_slam/Common.hpp"
 #include "sli_slam/Frame.hpp"
 #include "sli_slam/Camera.hpp"
@@ -39,9 +42,11 @@ public:
 
 private:
     std::string dataset_path_;
-    int current_image_index_ = 0;
+    int current_frame_index_ = 0;
 
     std::vector<Camera::Ptr> cameras_;
+
+    pcl::PointCloud<pcl::PointXYZI>::Ptr LoadKittiLidarFrame(const std::string &path);
 };
 
 }

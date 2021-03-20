@@ -1,4 +1,5 @@
 #include <fstream>
+#include <vector>
 
 #include <boost/format.hpp>
 
@@ -9,10 +10,14 @@
 #include <sophus/se3.hpp>
 #include <sophus/so3.hpp>
 
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
 #include "sli_slam/Dataset.hpp"
 #include "sli_slam/Frame.hpp"
 
 using std::ifstream;
+using std::vector;
 
 using boost::format;
 
@@ -23,6 +28,9 @@ using cv::Mat;
 using cv::Size;
 using cv::imread;
 using cv::resize;
+
+using pcl::PointCloud;
+using pcl::PointXYZI;
 
 using sli_slam::Dataset;
 using sli_slam::Frame;
@@ -65,23 +73,24 @@ bool Dataset::Init(){
     }
 
     fin.close();
-    current_image_index_ = 0;
+    current_frame_index_ = 0;
 
     return true;
 }
 
 Frame::Ptr Dataset::NextFrame(){
-    format fmt("%s/image_%d/%06d.png");
-    Mat image_left, image_right;
+    format img_fmt("%s/image_%d/%06d.png");
+    format lidar_fmt("%s/velodyne/%06d.bin");
 
     // Load images
-    image_left = imread((fmt % dataset_path_ % 0 % current_image_index_).str(), 
+    Mat image_left, image_right;
+    image_left = imread((img_fmt % dataset_path_ % 0 % current_frame_index_).str(), 
                         cv::IMREAD_GRAYSCALE);
-    image_right = imread((fmt % dataset_path_ % 1 % current_image_index_).str(),
+    image_right = imread((img_fmt % dataset_path_ % 1 % current_frame_index_).str(),
                          cv::IMREAD_GRAYSCALE);
 
     if(image_left.data == nullptr || image_right.data == nullptr){
-        LOG(WARNING) << "cannot find image at index " << current_image_index_;
+        LOG(WARNING) << "cannot find image at index " << current_frame_index_;
         return nullptr;
     }
 
@@ -89,10 +98,48 @@ Frame::Ptr Dataset::NextFrame(){
     resize(image_left, image_left_resized, Size(), 0.5, 0.5, cv::INTER_NEAREST);
     resize(image_right, image_right_resized, cv::Size(), 0.5, 0.5, cv::INTER_NEAREST);
 
+    
+
+    // Load LiDAR pointcloud
+    PointCloud<PointXYZI>::Ptr lidar_frame = 
+        LoadKittiLidarFrame((lidar_fmt % dataset_path_ % current_frame_index_).str());
+
+    if(lidar_frame->empty()){
+        LOG(WARNING) << "Empty LiDAR frame at index " << current_frame_index_;
+        return nullptr;
+    }
+
     Frame::Ptr new_frame = Frame::CreateFrame();
     new_frame->SetLeftImg(image_left_resized);
     new_frame->SetRightImg(image_right_resized);
-    current_image_index_ += 1;
+    new_frame->SetLidarPoints(lidar_frame);
+    current_frame_index_ += 1;
 
     return new_frame;
+}
+
+PointCloud<PointXYZI>::Ptr Dataset::LoadKittiLidarFrame(const std::string &path){
+    ifstream lidar_data_file(path, ifstream::in | ifstream::binary);
+
+    // Get file size
+    lidar_data_file.seekg(0, std::ios::end);
+    const size_t num_elements = lidar_data_file.tellg() / sizeof(float);
+    lidar_data_file.seekg(0, std::ios::beg);
+
+    vector<float> lidar_data(num_elements);
+    lidar_data_file.read(reinterpret_cast<char*>(&lidar_data.front()), 
+                         num_elements * sizeof(float));
+
+    PointCloud<PointXYZI> lidar_frame;
+    PointCloud<PointXYZI>::Ptr lidar_frame_ptr = lidar_frame.makeShared();
+    for(size_t i = 0; i < lidar_data.size(); i += 4){
+        PointXYZI p;
+        p.x = lidar_data[i];
+        p.y = lidar_data[i + 1];
+        p.z = lidar_data[i + 2];
+        p.intensity = lidar_data[i + 3];
+        lidar_frame_ptr->push_back(p);
+    }
+
+    return lidar_frame_ptr;
 }

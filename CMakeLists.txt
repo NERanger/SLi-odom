@@ -65,7 +65,8 @@ set(THIRD_PARTY_LIBS
     pthread
     ${CSPARSE_LIBRARY}
     Sophus::Sophus
-    Eigen3::Eigen)
+    Eigen3::Eigen
+    ${PCL_LIBRARIES})
 
 enable_testing()
 

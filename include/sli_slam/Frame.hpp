@@ -11,6 +11,9 @@
 
 #include <sophus/se3.hpp>
 
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
 #include "sli_slam/Feature.hpp"
 
 namespace sli_slam{
@@ -37,9 +40,12 @@ public:
     std::vector<Feature::Ptr> &FeatureRight() {return feature_right_;}
     cv::Mat LeftImg() const {return left_img_;}
     cv::Mat RightImg() const {return right_img_;}
+    pcl::PointCloud<pcl::PointXYZI>::Ptr LidarPoints() const {return lidar_points_;}
 
     void SetLeftImg(cv::Mat &img) {left_img_ = img;}
     void SetRightImg(cv::Mat &img) {right_img_ = img;}
+
+    void SetLidarPoints(pcl::PointCloud<pcl::PointXYZI>::Ptr lidar_points) {lidar_points_ = lidar_points;}
 
     static Ptr CreateFrame();
 
@@ -54,6 +60,8 @@ private:
     std::mutex pose_mutex_;
 
     cv::Mat left_img_, right_img_;
+
+    pcl::PointCloud<pcl::PointXYZI>::Ptr lidar_points_;
 
     // Feature in left image
     std::vector<Feature::Ptr> feature_left_;
