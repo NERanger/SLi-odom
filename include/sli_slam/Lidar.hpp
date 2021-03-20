@@ -3,6 +3,9 @@
 
 #include <memory>
 
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
 #include <sophus/se3.hpp>
 
 #include "sli_slam/Common.hpp"
@@ -17,6 +20,7 @@ public:
     Lidar() = default;
     Lidar(const Sophus::SE3d &pose){pose_ = pose;}
 
+    static void RemoveClosePoint(pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud, double thresh);
 private:
     // T_c_li
     // Tranformation form LiDAR to left camera

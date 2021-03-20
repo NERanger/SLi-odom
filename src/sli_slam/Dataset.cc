@@ -12,9 +12,11 @@
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/filters/filter.h>
 
 #include "sli_slam/Dataset.hpp"
 #include "sli_slam/Frame.hpp"
+#include "sli_slam/Lidar.hpp"
 
 using std::ifstream;
 using std::vector;
@@ -33,9 +35,15 @@ using cv::resize;
 
 using pcl::PointCloud;
 using pcl::PointXYZI;
+using pcl::removeNaNFromPointCloud;
 
 using sli_slam::Dataset;
 using sli_slam::Frame;
+using sli_slam::Lidar;
+
+namespace{
+    const double kMinimumLidarPointRange = 0.1;
+}
 
 bool Dataset::Init(){
     // Read camera intrinsics and extrinsics
@@ -127,11 +135,13 @@ Frame::Ptr Dataset::NextFrame(){
     resize(image_left, image_left_resized, Size(), 0.5, 0.5, cv::INTER_NEAREST);
     resize(image_right, image_right_resized, cv::Size(), 0.5, 0.5, cv::INTER_NEAREST);
 
-    
-
     // Load LiDAR pointcloud
     PointCloud<PointXYZI>::Ptr lidar_frame = 
         LoadKittiLidarFrame((lidar_fmt % dataset_path_ % current_frame_index_).str());
+
+    std::vector<int> indices; // For function usage, no actual need
+    removeNaNFromPointCloud(*lidar_frame, *lidar_frame, indices);
+    Lidar::RemoveClosePoint(lidar_frame, kMinimumLidarPointRange);
 
     if(lidar_frame->empty()){
         LOG(WARNING) << "Empty LiDAR frame at index " << current_frame_index_;

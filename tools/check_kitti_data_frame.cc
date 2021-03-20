@@ -43,10 +43,10 @@ int main(int argc, char *argv[]){
     }
 
     PCLVisualizer::Ptr pts_viewer (new PCLVisualizer ("3D Viewer"));
-    pts_viewer->setBackgroundColor (0, 0, 0);
-    pts_viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3);
-    pts_viewer->addCoordinateSystem (1.0);
-    pts_viewer->initCameraParameters ();
+    pts_viewer->setBackgroundColor(0, 0, 0);
+    pts_viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3);
+    pts_viewer->addCoordinateSystem(1.0);
+    pts_viewer->initCameraParameters();
 
     while (!pts_viewer->wasStopped()){
         Frame::Ptr f = dataset.NextFrame();

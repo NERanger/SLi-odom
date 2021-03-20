@@ -1,0 +1,29 @@
+#include<sli_slam/Lidar.hpp>
+
+using pcl::PointCloud;
+using pcl::PointXYZI;
+
+using sli_slam::Lidar;
+
+void Lidar::RemoveClosePoint(PointCloud<PointXYZI>::Ptr &cloud, double thresh){
+    PointCloud<PointXYZI>::Ptr out_ptr(new PointCloud<PointXYZI>);
+
+    uint32_t width = 0;
+    for(size_t i = 0; i < cloud->points.size(); ++i){
+        double dis_squared = cloud->points[i].x * cloud->points[i].x +
+                             cloud->points[i].y * cloud->points[i].y +
+                             cloud->points[i].z * cloud->points[i].z;
+        if(dis_squared < thresh * thresh){
+            // std::cout << "Point removed " << dis_squared << std::endl;
+            continue;
+        }
+        out_ptr->points.push_back(cloud->points[i]);
+        width += 1;
+    }
+
+    out_ptr->height = 1;
+    out_ptr->width = width;
+    out_ptr->is_dense = true;
+
+    cloud = out_ptr;
+}

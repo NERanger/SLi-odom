@@ -8,6 +8,7 @@ add_library(
         sli_slam/Frame.cc
         sli_slam/Frontend.cc
         sli_slam/G2oTypes.cc
+        sli_slam/Lidar.cc
         sli_slam/Map.cc
         sli_slam/MapPoint.cc
         sli_slam/Viewer.cc
