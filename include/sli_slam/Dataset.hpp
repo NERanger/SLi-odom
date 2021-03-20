@@ -11,6 +11,7 @@
 #include "sli_slam/Common.hpp"
 #include "sli_slam/Frame.hpp"
 #include "sli_slam/Camera.hpp"
+#include "sli_slam/Lidar.hpp"
 
 namespace sli_slam{
 
@@ -44,7 +45,8 @@ private:
     std::string dataset_path_;
     int current_frame_index_ = 0;
 
-    std::vector<Camera::Ptr> cameras_;
+    std::vector<Camera::Ptr> cameras_; // Two cameras when using KITTI
+    std::vector<Lidar::Ptr> lidars_;  // One LiDAR when using KITTI
 
     pcl::PointCloud<pcl::PointXYZI>::Ptr LoadKittiLidarFrame(const std::string &path);
 };

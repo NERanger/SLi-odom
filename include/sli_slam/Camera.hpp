@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include <sophus/se3.hpp>
+
 #include "sli_slam/Common.hpp"
 
 namespace sli_slam{

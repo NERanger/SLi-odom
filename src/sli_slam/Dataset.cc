@@ -21,6 +21,8 @@ using std::vector;
 
 using boost::format;
 
+using Eigen::Quaterniond;
+
 using Sophus::SE3d;
 using Sophus::SO3d;
 
@@ -43,6 +45,7 @@ bool Dataset::Init(){
         return false;
     }
 
+    // Load camera projection matrix
     for(int i = 0; i < 4; ++i){
         char camera_name[3];
         for(int k = 0; k < 3; ++k){
@@ -71,6 +74,32 @@ bool Dataset::Init(){
         cameras_.push_back(new_camera);
         LOG(INFO) << "Camera " << i << " extrinsics: " << t.transpose();
     }
+
+    // Load LiDAR extrinsics (T_c_li)
+    char trans_prefix[3];
+    for(int k = 0; k < 3; ++k){
+        fin >> trans_prefix[k];
+    }
+
+    double lidar_trans_data[12];
+    for(int k = 0; k < 12; ++k){
+        fin >> lidar_trans_data[k];
+    }
+
+    Mat33 R_c_li;
+    R_c_li << lidar_trans_data[0], lidar_trans_data[1], lidar_trans_data[2],
+              lidar_trans_data[4], lidar_trans_data[5], lidar_trans_data[6],
+              lidar_trans_data[8], lidar_trans_data[9], lidar_trans_data[10];
+
+    Vec3 t_c_li;
+    t_c_li << lidar_trans_data[3], lidar_trans_data[7], lidar_trans_data[11];
+
+    Quaterniond Q_c_li(R_c_li);
+    SE3d T_c_li(Q_c_li, t_c_li);
+    Lidar::Ptr new_lidar(new Lidar(T_c_li));
+    lidars_.push_back(new_lidar);
+
+    LOG(INFO) << "T_c_li: " << T_c_li.matrix3x4();
 
     fin.close();
     current_frame_index_ = 0;

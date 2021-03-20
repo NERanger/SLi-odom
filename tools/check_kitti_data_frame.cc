@@ -19,13 +19,19 @@ using cv::vconcat;
 using cv::waitKey;
 using cv::imshow;
 
+using pcl::PointXYZ;
 using pcl::PointXYZI;
 using pcl::PointCloud;
-using pcl::visualization::CloudViewer;
+using pcl::visualization::PCLVisualizer;
+using pcl::copyPointCloud;
+using pcl::visualization::PointCloudColorHandlerCustom;
 
 using sli_slam::Dataset;
 using sli_slam::Frame;
 
+// PCL vislulizer ref：
+// http://www.pcl-users.org/Simple-animation-with-use-of-pcl-visualization-PCLVisualizer-td4046220.html
+// https://pointclouds.org/documentation/tutorials/pcl_visualizer.html
 int main(int argc, char *argv[]){
     string dataset_path = argv[1];
 
@@ -36,25 +42,34 @@ int main(int argc, char *argv[]){
         return EXIT_FAILURE;
     }
 
-    while (true){
+    PCLVisualizer::Ptr pts_viewer (new PCLVisualizer ("3D Viewer"));
+    pts_viewer->setBackgroundColor (0, 0, 0);
+    pts_viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3);
+    pts_viewer->addCoordinateSystem (1.0);
+    pts_viewer->initCameraParameters ();
+
+    while (!pts_viewer->wasStopped()){
         Frame::Ptr f = dataset.NextFrame();
         if(!f){
             break;
         }
 
         Mat left_img, right_img, img;
-        PointCloud<PointXYZI>::Ptr lidar;
+        PointCloud<PointXYZI>::Ptr lidar_xyzi;
 
         left_img = f->LeftImg();
         right_img = f->RightImg();
         vconcat(left_img, right_img, img);
-        lidar = f->LidarPoints();
+        lidar_xyzi = f->LidarPoints();
 
-        CloudViewer viewer("LiDAR Frame");
-        viewer.showCloud(lidar);
+        pts_viewer->removeAllPointClouds();
+
+        pts_viewer->addPointCloud<PointXYZI>(lidar_xyzi);
+
+        pts_viewer->spinOnce(100);
 
         imshow("Camera", img);
-        waitKey(20);
+        waitKey(100);
     }
 
     return EXIT_SUCCESS;
