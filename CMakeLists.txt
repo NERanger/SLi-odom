@@ -3,8 +3,8 @@ project(sli-slam)
 
 set(CMAKE_BUILD_TYPE Release)
 
-set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
-set(CMAKE_CXX_FLAGS_RELEASE  "-std=c++11 -O3 -fopenmp -pthread")
+set(CMAKE_CXX_FLAGS "-std=c++14 -Wall")
+set(CMAKE_CXX_FLAGS_RELEASE  "-std=c++14 -O3 -fopenmp -pthread")
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -21,7 +21,7 @@ find_package(OpenCV 3.4 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 # PCL
-find_package(PCL 1.2 REQUIRED)
+find_package(PCL 1.2 REQUIRED COMPONENTS common filters visualization)
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
@@ -35,6 +35,8 @@ find_package(Sophus REQUIRED)
 include_directories(${Sophus_INCLUDE_DIRS})
 
 # G2O
+# https://github.com/RainerKuemmerle/g2o
+# git checkout 20201223_git
 find_package(G2O REQUIRED)
 include_directories(${G2O_INCLUDE_DIRS})
 
@@ -43,6 +45,8 @@ find_package(Glog REQUIRED)
 include_directories(${GLOG_INCLUDE_DIRS})
 
 # gtest
+# Installation please refer to the following link:
+# https://stackoverflow.com/questions/24295876/cmake-cannot-find-googletest-required-library-in-ubuntu
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 

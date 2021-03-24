@@ -1,4 +1,4 @@
-SET(TEST_SOURCES test_triangulation)
+SET(TEST_SOURCES test_sli_slam)
 
 FOREACH (test_src ${TEST_SOURCES})
     ADD_EXECUTABLE(${test_src} ${test_src}.cc)

@@ -6,8 +6,8 @@ target_link_libraries(
         ${Pangolin_LIBRARIES} GL GLU GLEW glut
         pthread)
 
-add_executable(load_kitti_lidar_frame load_kitti_lidar_frame.cc)
+add_executable(load_kitti_lidar_frame LoadKittiLidarFrame.cc)
 target_link_libraries (load_kitti_lidar_frame ${PCL_LIBRARIES})
 
-add_executable(check_kitti_data_frame check_kitti_data_frame.cc)
+add_executable(check_kitti_data_frame CheckKittiDataFrame.cc)
 target_link_libraries (check_kitti_data_frame sli_slam ${THIRD_PARTY_LIBS})
