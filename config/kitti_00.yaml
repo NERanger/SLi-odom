@@ -3,6 +3,10 @@
 # KITTI dataset directory, change it to yours! 
 dataset_dir: /mnt/f/Dataset/KITTI/data/sequence/00
 
+# Image size, expected same for both cameras
+img_width: 1241
+img_height: 376
+
 # camera intrinsics
 camera.fx: 718.856
 camera.fy: 718.856

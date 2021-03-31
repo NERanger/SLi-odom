@@ -17,6 +17,7 @@
 #include "sli_slam/Dataset.hpp"
 #include "sli_slam/Frame.hpp"
 #include "sli_slam/Lidar.hpp"
+#include "sli_slam/Config.hpp"
 
 using std::ifstream;
 using std::vector;
@@ -40,6 +41,7 @@ using pcl::removeNaNFromPointCloud;
 using sli_slam::Dataset;
 using sli_slam::Frame;
 using sli_slam::Lidar;
+using sli_slam::Config;
 
 namespace{
     const double kMinimumLidarPointRange = 0.1;
@@ -53,6 +55,9 @@ bool Dataset::Init(){
         return false;
     }
 
+    int img_width = Config::Get<int>("img_width") * img_scale_;
+    int img_height = Config::Get<int>("img_height") * img_scale_;
+
     // Load camera projection matrix
     for(int i = 0; i < 4; ++i){
         char camera_name[3];
@@ -65,6 +70,11 @@ bool Dataset::Init(){
             fin >> projection_data[k];
         }
 
+        Mat34 P;
+        P << projection_data[0], projection_data[1], projection_data[2], projection_data[3],
+             projection_data[4], projection_data[5], projection_data[6], projection_data[7],
+             projection_data[8], projection_data[9], projection_data[10], projection_data[11];
+
         Mat33 K;
         K << projection_data[0], projection_data[1], projection_data[2],
              projection_data[4], projection_data[5], projection_data[6],
@@ -75,10 +85,10 @@ bool Dataset::Init(){
         t = K.inverse() * t;
 
         // New intrinsics after downsampling with factor 0.5
-        K = K * 0.5;
+        K = K * img_scale_;
 
-        Camera::Ptr new_camera(new Camera(K(0, 0), K(1, 1), K(0, 2), K(1, 2),
-                                          t.norm(), SE3d(SO3d(), t)));
+        Camera::Ptr new_camera(new Camera(K(0, 0), K(1, 1), K(0, 2), K(1, 2), img_width, img_height,
+                                          t.norm(), P, SE3d(SO3d(), t)));
         cameras_.push_back(new_camera);
         LOG(INFO) << "Camera " << i << " extrinsics: " << t.transpose();
     }

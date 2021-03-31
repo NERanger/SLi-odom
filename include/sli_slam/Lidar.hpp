@@ -20,6 +20,12 @@ public:
     Lidar() = default;
     Lidar(const Sophus::SE3d &pose){pose_ = pose;}
 
+    // Transform LiDAR pointcloud to left camera coordinate
+    void Lidar2LeftCam(pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud) const;
+
+    // Transform LiDAR pointcloud to world coordinate
+    void Lidar2World(pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud) const;
+
     static void RemoveClosePoint(pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud, double thresh);
 private:
     // T_c_li

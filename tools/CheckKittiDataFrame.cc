@@ -7,8 +7,9 @@
 #include <pcl/point_cloud.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-#include <sli_slam/Dataset.hpp>
-#include <sli_slam/Frame.hpp>
+#include "sli_slam/Dataset.hpp"
+#include "sli_slam/Frame.hpp"
+#include "sli_slam/Lidar.hpp"
 
 using std::string;
 using std::cerr;
@@ -28,6 +29,7 @@ using pcl::visualization::PointCloudColorHandlerCustom;
 
 using sli_slam::Dataset;
 using sli_slam::Frame;
+using sli_slam::Lidar;
 
 // PCL vislulizer ref：
 // http://www.pcl-users.org/Simple-animation-with-use-of-pcl-visualization-PCLVisualizer-td4046220.html
@@ -41,6 +43,8 @@ int main(int argc, char *argv[]){
         cerr << "Dataset init fail." << endl;
         return EXIT_FAILURE;
     }
+
+    Lidar::Ptr lidar = dataset.GetLidarById(0);
 
     PCLVisualizer::Ptr pts_viewer (new PCLVisualizer ("3D Viewer"));
     pts_viewer->setBackgroundColor(0, 0, 0);
@@ -62,6 +66,8 @@ int main(int argc, char *argv[]){
         vconcat(left_img, right_img, img);
         lidar_xyzi = f->LidarPoints();
 
+        lidar->Lidar2LeftCam(lidar_xyzi);
+
         pts_viewer->removeAllPointClouds();
 
         pts_viewer->addPointCloud<PointXYZI>(lidar_xyzi);
@@ -69,7 +75,7 @@ int main(int argc, char *argv[]){
         pts_viewer->spinOnce(100);
 
         imshow("Camera", img);
-        waitKey(100);
+        waitKey(2000);
     }
 
     return EXIT_SUCCESS;

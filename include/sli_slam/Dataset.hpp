@@ -41,11 +41,20 @@ public:
     // Get camera by id
     Camera::Ptr GetCameraById(int camera_id) const {return cameras_.at(camera_id);}
 
+    // Get Lidar by id
+    Lidar::Ptr GetLidarById(int lidar_id) const {return lidars_.at(lidar_id);}
+
 private:
     std::string dataset_path_;
     int current_frame_index_ = 0;
 
-    std::vector<Camera::Ptr> cameras_; // Two cameras when using KITTI
+    // Image scale factor
+    double img_scale_ = 0.5;
+
+    // Two cameras when using KITTI
+    // cam0 is left cam
+    // cam1 is right cam
+    std::vector<Camera::Ptr> cameras_;
     std::vector<Lidar::Ptr> lidars_;  // One LiDAR when using KITTI
 
     pcl::PointCloud<pcl::PointXYZI>::Ptr LoadKittiLidarFrame(const std::string &path);

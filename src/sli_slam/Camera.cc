@@ -1,18 +1,55 @@
 #include <sophus/se3.hpp>
 
+#include <opencv2/opencv.hpp>
+
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
 #include "sli_slam/Common.hpp"
 #include "sli_slam/Camera.hpp"
+
+using cv::Mat;
+using cv::Mat_;
+
+using pcl::PointCloud;
+using pcl::PointXYZI;
 
 using Sophus::SE3d;
 
 using sli_slam::Camera;
 
-Camera::Camera(double fx, double fy, double cx, double cy, 
-               double baseline, const SE3d &pose) : 
-               fx_(fx), fy_(fy), cx_(cx), cy_(cy),
-               baseline_(baseline), pose_(pose){
+Camera::Camera(double fx, double fy, double cx, double cy, int img_width, int img_height,
+               double baseline, Mat34 &projection_mat, const SE3d &pose) : 
+               fx_(fx), fy_(fy), cx_(cx), cy_(cy), img_width_(img_width), img_height_(img_height),
+               baseline_(baseline), projection_mat_(projection_mat), 
+               pose_(pose){
     
     pose_inv_ = pose_.inverse();
+}
+
+Mat Camera::GenDepthMapFromLidar(PointCloud<PointXYZI>::Ptr pt_cloud){
+    Mat depth_map(img_height_, img_width_, CV_64FC1);
+
+    for(size_t i = 0; i < pt_cloud->points.size(); ++i){
+        Vec3 p;
+        p(0, 0) = pt_cloud->points[i].x;
+        p(1, 0) = pt_cloud->points[i].y;
+        p(2, 0) = pt_cloud->points[i].z;
+
+        Vec2 img_pt = Camera2Pixel(p);
+
+        if(img_pt(0, 0) < 0 || img_pt(0, 0) > img_width_ - 1){
+            continue;
+        }
+
+        if(img_pt(1, 0) < 0 || img_pt(1, 0) > img_height_ - 1){
+            continue;
+        }
+
+        depth_map.at<double>(img_pt(1, 0), img_pt(0, 0)) = p(2, 0);
+    }
+
+    return depth_map;
 }
 
 Mat33 Camera::GetIntrinsicMatrix() const{

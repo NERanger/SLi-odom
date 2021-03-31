@@ -1,9 +1,20 @@
-#include<sli_slam/Lidar.hpp>
+#include <pcl/common/transforms.h>
+
+#include "sli_slam/Lidar.hpp"
 
 using pcl::PointCloud;
 using pcl::PointXYZI;
+using pcl::transformPointCloud;
 
 using sli_slam::Lidar;
+
+void Lidar::Lidar2LeftCam(PointCloud<PointXYZI>::Ptr &cloud) const{
+    PointCloud<PointXYZI>::Ptr transformed_ptcloud(new PointCloud<PointXYZI>);
+
+    transformPointCloud(*cloud, *transformed_ptcloud, pose_.matrix());
+
+    cloud = transformed_ptcloud;
+}
 
 void Lidar::RemoveClosePoint(PointCloud<PointXYZI>::Ptr &cloud, double thresh){
     PointCloud<PointXYZI>::Ptr out_ptr(new PointCloud<PointXYZI>);
