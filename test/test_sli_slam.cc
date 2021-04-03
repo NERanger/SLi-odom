@@ -66,7 +66,7 @@ TEST(sli_slam_test, RemoveCloseLidarPoint){
 
     std::cout << "Current size: " << cloud->points.size() << std::endl;
 
-    Lidar::RemoveClosePoint(cloud, 1.0);
+    Lidar::RemoveCloseFarPoint(cloud, 1.0, 70.0);
 
     std::cout << "Current size: " << cloud->points.size() << std::endl;
 

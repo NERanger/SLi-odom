@@ -23,12 +23,16 @@ using pcl::PointCloud;
 using cv::Mat;
 using cv::imshow;
 using cv::waitKey;
+using cv::minMaxIdx;
+using cv::applyColorMap;
 
 using sli_slam::Dataset;
 using sli_slam::Frame;
 using sli_slam::Lidar;
 using sli_slam::Camera;
 using sli_slam::Config;
+
+Mat CreateDepthVisulizationMat(Mat &depth);
 
 int main(int argc, char const *argv[]){
 
@@ -52,8 +56,11 @@ int main(int argc, char const *argv[]){
     Camera::Ptr left_cam = dataset.GetCameraById(0);
     Lidar::Ptr lidar = dataset.GetLidarById(0);
 
+    Frame::Ptr f;
     while(true){
-        Frame::Ptr f = dataset.NextFrame();
+        f = dataset.NextFrame();
+        // f = dataset.NextFrame();
+        // f = dataset.NextFrame();
         if(!f){
             break;
         }
@@ -62,15 +69,34 @@ int main(int argc, char const *argv[]){
         PointCloud<PointXYZI>::Ptr lidar_xyzi = f->LidarPoints();
 
         // Convert to left camera coordiante
-        lidar->Lidar2LeftCam(lidar_xyzi);
+        PointCloud<PointXYZI>::Ptr traned_ptcloud = lidar->Lidar2LeftCam(lidar_xyzi);
 
-        Mat depth = left_cam->GenDepthMapFromLidar(lidar_xyzi);
+        Mat depth = left_cam->GenDepthMapFromLidar(traned_ptcloud);
+        Mat vis = CreateDepthVisulizationMat(depth);
+
+        // cout << depth << endl;
 
         imshow("depth", depth);
         imshow("color", left_img);
+        imshow("depth_vis", vis);
         waitKey(0);
 
     }
 
     return EXIT_SUCCESS;
+}
+
+Mat CreateDepthVisulizationMat(Mat &depth){
+    // cv::Size s = depth.size();
+    double depth_min, depth_max;
+    // cv::MinMaxLoc(depth, &depth_min, &depth_max);
+    cv::minMaxLoc(depth, &depth_min, &depth_max);
+    cout << "depth max: " << depth_max << endl;
+    cout << "depth min: " << depth_min << endl;
+    Mat out;
+
+    depth.convertTo(out, CV_8UC1, 255 / (depth_max - depth_min));
+    cv::applyColorMap(out, out, cv::COLORMAP_CIVIDIS);
+
+    return out;
 }

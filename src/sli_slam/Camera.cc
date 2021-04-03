@@ -2,6 +2,8 @@
 
 #include <opencv2/opencv.hpp>
 
+#include <glog/logging.h>
+
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
@@ -27,14 +29,23 @@ Camera::Camera(double fx, double fy, double cx, double cy, int img_width, int im
     pose_inv_ = pose_.inverse();
 }
 
+// Input is point cloud in left camera coordinate
 Mat Camera::GenDepthMapFromLidar(PointCloud<PointXYZI>::Ptr pt_cloud){
-    Mat depth_map(img_height_, img_width_, CV_64FC1);
+    Mat depth_map = -Mat::ones(img_height_, img_width_, CV_64FC1);
 
     for(size_t i = 0; i < pt_cloud->points.size(); ++i){
         Vec3 p;
         p(0, 0) = pt_cloud->points[i].x;
         p(1, 0) = pt_cloud->points[i].y;
         p(2, 0) = pt_cloud->points[i].z;
+
+        // if(p(2, 0) > 70.0){
+        //     LOG(WARNING) << "point z value too large";
+        // }
+
+        if(p(2, 0) < 0.0){
+            continue;
+        }
 
         Vec2 img_pt = Camera2Pixel(p);
 

@@ -8,15 +8,16 @@ using pcl::transformPointCloud;
 
 using sli_slam::Lidar;
 
-void Lidar::Lidar2LeftCam(PointCloud<PointXYZI>::Ptr &cloud) const{
+PointCloud<PointXYZI>::Ptr Lidar::Lidar2LeftCam(PointCloud<PointXYZI>::Ptr &cloud) const{
     PointCloud<PointXYZI>::Ptr transformed_ptcloud(new PointCloud<PointXYZI>);
 
     transformPointCloud(*cloud, *transformed_ptcloud, pose_.matrix());
 
-    cloud = transformed_ptcloud;
+    // cloud = transformed_ptcloud;
+    return transformed_ptcloud;
 }
 
-void Lidar::RemoveClosePoint(PointCloud<PointXYZI>::Ptr &cloud, double thresh){
+void Lidar::RemoveCloseFarPoint(PointCloud<PointXYZI>::Ptr &cloud, double close_thresh, double far_thresh){
     PointCloud<PointXYZI>::Ptr out_ptr(new PointCloud<PointXYZI>);
 
     uint32_t width = 0;
@@ -24,7 +25,7 @@ void Lidar::RemoveClosePoint(PointCloud<PointXYZI>::Ptr &cloud, double thresh){
         double dis_squared = cloud->points[i].x * cloud->points[i].x +
                              cloud->points[i].y * cloud->points[i].y +
                              cloud->points[i].z * cloud->points[i].z;
-        if(dis_squared < thresh * thresh){
+        if(dis_squared < close_thresh * close_thresh || dis_squared > far_thresh * far_thresh){
             // std::cout << "Point removed " << dis_squared << std::endl;
             continue;
         }

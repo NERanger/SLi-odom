@@ -45,6 +45,7 @@ using sli_slam::Config;
 
 namespace{
     const double kMinimumLidarPointRange = 0.1;
+    const double kMaximumLidarPointRange = 70.0;
 }
 
 bool Dataset::Init(){
@@ -136,6 +137,8 @@ Frame::Ptr Dataset::NextFrame(){
     image_right = imread((img_fmt % dataset_path_ % 1 % current_frame_index_).str(),
                          cv::IMREAD_GRAYSCALE);
 
+    // LOG(INFO) << "Left img loaded from" << (img_fmt % dataset_path_ % 1 % current_frame_index_).str();
+
     if(image_left.data == nullptr || image_right.data == nullptr){
         LOG(WARNING) << "cannot find image at index " << current_frame_index_;
         return nullptr;
@@ -151,7 +154,9 @@ Frame::Ptr Dataset::NextFrame(){
 
     std::vector<int> indices; // For function usage, no actual need
     removeNaNFromPointCloud(*lidar_frame, *lidar_frame, indices);
-    Lidar::RemoveClosePoint(lidar_frame, kMinimumLidarPointRange);
+    Lidar::RemoveCloseFarPoint(lidar_frame, kMinimumLidarPointRange, kMaximumLidarPointRange);
+
+    // LOG(INFO) << "Lidar data loaded from" << (lidar_fmt % dataset_path_ % current_frame_index_).str();
 
     if(lidar_frame->empty()){
         LOG(WARNING) << "Empty LiDAR frame at index " << current_frame_index_;
@@ -179,8 +184,7 @@ PointCloud<PointXYZI>::Ptr Dataset::LoadKittiLidarFrame(const std::string &path)
     lidar_data_file.read(reinterpret_cast<char*>(&lidar_data.front()), 
                          num_elements * sizeof(float));
 
-    PointCloud<PointXYZI> lidar_frame;
-    PointCloud<PointXYZI>::Ptr lidar_frame_ptr = lidar_frame.makeShared();
+    PointCloud<PointXYZI>::Ptr lidar_frame_ptr(new PointCloud<PointXYZI>);
     for(size_t i = 0; i < lidar_data.size(); i += 4){
         PointXYZI p;
         p.x = lidar_data[i];

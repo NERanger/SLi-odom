@@ -10,6 +10,7 @@
 #include "sli_slam/Dataset.hpp"
 #include "sli_slam/Frame.hpp"
 #include "sli_slam/Lidar.hpp"
+#include "sli_slam/Config.hpp"
 
 using std::string;
 using std::cerr;
@@ -30,6 +31,7 @@ using pcl::visualization::PointCloudColorHandlerCustom;
 using sli_slam::Dataset;
 using sli_slam::Frame;
 using sli_slam::Lidar;
+using sli_slam::Config;
 
 // PCL vislulizer ref：
 // http://www.pcl-users.org/Simple-animation-with-use-of-pcl-visualization-PCLVisualizer-td4046220.html
@@ -37,7 +39,17 @@ using sli_slam::Lidar;
 int main(int argc, char *argv[]){
     string dataset_path = argv[1];
 
-    Dataset dataset(dataset_path);
+    if(argc != 2){
+        cerr << "Usage: ./RangeImgOnCam <path-to-config>" << endl;
+    }
+
+    string config_path(argv[1]);
+    if(!Config::SetParameterFile(config_path)){
+        cerr << "Cannot open config file at " << config_path << endl;
+        return EXIT_FAILURE;
+    }
+
+    Dataset dataset(Config::Get<string>("dataset_dir"));
 
     if(!dataset.Init()){
         cerr << "Dataset init fail." << endl;
