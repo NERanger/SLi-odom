@@ -1,7 +1,7 @@
 %YAML:1.0
 # data
 # KITTI dataset directory, change it to yours! 
-dataset_dir: /mnt/f/Dataset/KITTI/data/sequence/00
+dataset_dir: /mnt/f/Dataset/KITTI/data/sequence/01
 
 # Image size, expected same for both cameras
 img_width: 1241
@@ -14,9 +14,9 @@ camera.cx: 607.1928
 camera.cy: 185.2157
 
 # Feature parameter
-num_features: 200
-num_features_init: 70
-num_features_tracking: 70
+num_features: 300
+num_features_init: 100
+num_features_tracking: 50
 
 # ORB parameter
 # Check https://docs.opencv.org/3.4/db/d95/classcv_1_1ORB.html

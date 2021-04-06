@@ -4,6 +4,9 @@
 
 #include <opencv2/opencv.hpp>
 
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+
 #include "sli_slam/Frontend.hpp"
 #include "sli_slam/Config.hpp"
 #include "sli_slam/G2oTypes.hpp"
@@ -24,6 +27,11 @@ using cv::calcOpticalFlowPyrLK;
 using Eigen::Matrix2d;
 
 using Sophus::SE3d;
+
+// using cv::ORB;
+
+using pcl::PointXYZI;
+using pcl::PointCloud;
 
 using g2o::BlockSolver_6_3;
 using g2o::LinearSolverDense;
@@ -46,7 +54,21 @@ Frontend::Frontend(){
     gftt_detector_ = 
         GFTTDetector::create(Config::Get<int>("num_features"), 0.01, 20);
 
+    // Create ORB detector
+    // int num_feature = Config::Get<int>("num_features");
+    // float scale_factor = Config::Get<float>("scale_factor");
+    // int pyramid_level = Config::Get<int>("pyramid_level");
+    // int edge_threshold = Config::Get<int>("edge_threshold");
+    // int first_level = Config::Get<int>("first_level");
+    // int wta_k = Config::Get<int>("wta_k");
+    // int patch_size = Config::Get<int>("patch_size");
+    // int fast_thresh = Config::Get<int>("fast_thresh");
+    // orb_detector_ = ORB::create(num_feature, scale_factor, pyramid_level, 
+    //                             edge_threshold, first_level, wta_k, ORB::HARRIS_SCORE, 
+    //                             patch_size, fast_thresh);
+
     num_features_init_ = Config::Get<int>("num_features_init");
+    num_features_tracking_ = Config::Get<int>("num_features_tracking");
     num_features_ = Config::Get<int>("num_features");
 }
 
@@ -98,6 +120,15 @@ bool Frontend::Track(){
     }
 
     return true;
+}
+
+bool Frontend::TrackORB(){
+    // TODO
+}
+
+int Frontend::TrackLastFrameORB(){
+    // Use ORB for feature matching
+    // TODO
 }
 
 int Frontend::TrackLastFrame(){
@@ -355,6 +386,41 @@ int Frontend::TriangulateNewPoints(){
     for (size_t i = 0; i < current_frame_->FeatureLeft().size(); ++i){
         if(current_frame_->FeatureLeft()[i]->RelatedMapPoint().expired() &&
            current_frame_->FeatureRight()[i] != nullptr){
+
+            float feat_pos_x = current_frame_->FeatureLeft()[i]->Position().pt.x;
+            float feat_pos_y = current_frame_->FeatureLeft()[i]->Position().pt.y;
+
+            PointCloud<PointXYZI>::Ptr lidar_xyzi = current_frame_->LidarPoints();
+            // Convert to left camera coordiante
+            PointCloud<PointXYZI>::Ptr transformed_ptcloud = lidar_->Lidar2LeftCam(lidar_xyzi);
+            Mat depth_map = camera_left_->GenDepthMapFromLidar(transformed_ptcloud);
+
+            Vec3 pworld = Vec3::Zero();
+
+            double depth_val = depth_map.at<double>(feat_pos_y, feat_pos_x);
+
+            // Use lidar measurement if depth is availible
+            if(depth_val > 0){
+                MapPoint::Ptr new_map_point = MapPoint::CreateNewMapPoint();
+                pworld = camera_left_->Pixel2Camera(
+                            Vec2(current_frame_->FeatureLeft()[i]->Position().pt.x,
+                                 current_frame_->FeatureLeft()[i]->Position().pt.y),
+                            depth_val);
+
+                // When init, extrinsics coordinate is the same with world coordinate
+                new_map_point->SetPosition(pworld);
+                new_map_point->AddObservation(current_frame_->FeatureLeft()[i]);
+                // new_map_point->AddObservation(current_frame_->FeatureRight()[i]);
+
+                current_frame_->FeatureLeft()[i]->SetRelatedMapPoint(new_map_point);
+                // current_frame_->FeatureRight()[i]->SetRelatedMapPoint(new_map_point);
+
+                map_->InsertMapPoint(new_map_point);
+
+                cnt_triangulated_pts += 1;
+
+                continue;
+            }
             // Perform triangulation when
             // left feature has no related mappoint(i.e. depth is not available) and
             // right feature match exsits
@@ -366,7 +432,7 @@ int Frontend::TriangulateNewPoints(){
                     Vec2(current_frame_->FeatureRight()[i]->Position().pt.x,
                          current_frame_->FeatureRight()[i]->Position().pt.y))};
             
-            Vec3 pworld = Vec3::Zero();
+            // Vec3 pworld = Vec3::Zero();
 
             if(Triangulation(poses, points, pworld) && pworld[2] > 0){
                 MapPoint::Ptr new_map_point = MapPoint::CreateNewMapPoint();
@@ -418,6 +484,43 @@ bool Frontend::BuildInitMap(){
     vector<SE3d> poses{camera_left_->Pose(), camera_right_->Pose()};
     size_t cnt_init_landmarks = 0;
     for(size_t i = 0; i < current_frame_->FeatureLeft().size(); ++i){
+        
+        float feat_pos_x = current_frame_->FeatureLeft()[i]->Position().pt.x;
+        float feat_pos_y = current_frame_->FeatureLeft()[i]->Position().pt.y;
+
+        PointCloud<PointXYZI>::Ptr lidar_xyzi = current_frame_->LidarPoints();
+        // Convert to left camera coordiante
+        PointCloud<PointXYZI>::Ptr transformed_ptcloud = lidar_->Lidar2LeftCam(lidar_xyzi);
+        Mat depth_map = camera_left_->GenDepthMapFromLidar(transformed_ptcloud);
+
+        Vec3 pworld = Vec3::Zero();
+
+        double depth_val = depth_map.at<double>(feat_pos_y, feat_pos_x);
+
+        // Use lidar measurement if depth is availible
+        if(depth_val > 0){
+            LOG(INFO) << "---------DEBUG---------------";
+            MapPoint::Ptr new_map_point = MapPoint::CreateNewMapPoint();
+            pworld = camera_left_->Pixel2Camera(
+                        Vec2(current_frame_->FeatureLeft()[i]->Position().pt.x,
+                             current_frame_->FeatureLeft()[i]->Position().pt.y),
+                        depth_val);
+
+            // When init, extrinsics coordinate is the same with world coordinate
+            new_map_point->SetPosition(pworld);
+            new_map_point->AddObservation(current_frame_->FeatureLeft()[i]);
+            // new_map_point->AddObservation(current_frame_->FeatureRight()[i]);
+
+            current_frame_->FeatureLeft()[i]->SetRelatedMapPoint(new_map_point);
+            // current_frame_->FeatureRight()[i]->SetRelatedMapPoint(new_map_point);
+
+            cnt_init_landmarks += 1;
+
+            map_->InsertMapPoint(new_map_point);
+
+            continue;
+        }
+
         if(current_frame_->FeatureRight()[i] == nullptr){
             continue;
         }
@@ -429,8 +532,6 @@ bool Frontend::BuildInitMap(){
             camera_right_->Pixel2Camera(
                 Vec2(current_frame_->FeatureRight()[i]->Position().pt.x,
                      current_frame_->FeatureRight()[i]->Position().pt.y))};
-
-        Vec3 pworld = Vec3::Zero();
 
         if(Triangulation(poses, points, pworld) && pworld[2] > 0){
             MapPoint::Ptr new_map_point = MapPoint::CreateNewMapPoint();

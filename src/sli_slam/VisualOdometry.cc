@@ -39,6 +39,7 @@ bool VisualOdometry::Init(){
     frontend_->SetMap(map_);
     frontend_->SetLeftCam(dataset_->GetCameraById(0));
     frontend_->SetRightCam(dataset_->GetCameraById(1));
+    frontend_->SetLidar(dataset_->GetLidarById(0));
 
     backend_->SetMap(map_);
     backend_->SetLeftCam(dataset_->GetCameraById(0));

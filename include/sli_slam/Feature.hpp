@@ -23,7 +23,8 @@ public:
 
     Feature() = default;
 
-    Feature(std::shared_ptr<Frame> frame, const cv::KeyPoint &kp) : frame_(frame), position_(kp){}
+    Feature(std::shared_ptr<Frame> frame, const cv::KeyPoint &kp)
+             : frame_(frame), position_(kp){}
 
     std::weak_ptr<MapPoint> RelatedMapPoint() const {return map_point_;}
     std::weak_ptr<Frame> RelatedFrame() const {return frame_;}

@@ -5,10 +5,13 @@
 
 #include <Eigen/Core>
 
+#include <opencv2/features2d/features2d.hpp>
+
 #include "sli_slam/Common.hpp"
 #include "sli_slam/Map.hpp"
 #include "sli_slam/Frame.hpp"
 #include "sli_slam/Camera.hpp"
+#include "sli_slam/Lidar.hpp"
 #include "sli_slam/Backend.hpp"
 #include "sli_slam/Viewer.hpp"
 
@@ -39,6 +42,7 @@ public:
     void SetViewer(Viewer::Ptr viewer) {viewer_ = viewer;}
     void SetLeftCam(Camera::Ptr left_cam) {camera_left_ = left_cam;}
     void SetRightCam(Camera::Ptr right_cam) {camera_right_ = right_cam;}
+    void SetLidar(Lidar::Ptr lidar){lidar_ = lidar;}
 
     FrontendStatus GetStatus() const {return status_;}
 
@@ -52,6 +56,12 @@ private:
     bool Track();
 
     /**
+     * Use orb for tracking when tracking is bad
+     * @return true if success
+     */
+    bool TrackORB();
+
+    /**
      * Reset when lost
      * @return true if success
      */
@@ -62,6 +72,12 @@ private:
      * @return num of tracked points
      */
     int TrackLastFrame();
+
+    /**
+     * Track with last frame using ORB
+     * @return num of tracked points
+     */
+    int TrackLastFrameORB();
 
     /**
      * Estimate current frame's pose
@@ -117,6 +133,7 @@ private:
     Frame::Ptr last_frame_ = nullptr;
     Camera::Ptr camera_left_ = nullptr;
     Camera::Ptr camera_right_ = nullptr;
+    Lidar::Ptr lidar_ = nullptr;
 
     Map::Ptr map_ = nullptr;
     std::shared_ptr<Backend> backend_ = nullptr;
@@ -138,6 +155,7 @@ private:
 
     // utilities
     cv::Ptr<cv::GFTTDetector> gftt_detector_;  // feature detector in opencv
+    // cv::Ptr<cv::ORB> orb_detector_;
 };
 
 } // namespace sli_slam
