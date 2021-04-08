@@ -1,6 +1,3 @@
-# Stereo SLAM
+# Stereo-LiDAR Odometry
 
-## TODO
-
-* Add trajectory in viewer
-* Plot groundtruth and estimated trajectory
+A simple LiDAR-assisted stereo odometry
