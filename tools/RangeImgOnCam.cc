@@ -96,7 +96,7 @@ Mat CreateDepthVisulizationMat(Mat &depth){
     Mat out;
 
     depth.convertTo(out, CV_8UC1, 255 / (depth_max - depth_min));
-    cv::applyColorMap(out, out, cv::COLORMAP_CIVIDIS);
+    cv::applyColorMap(out, out, cv::COLORMAP_JET);
 
     return out;
 }
