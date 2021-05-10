@@ -55,17 +55,26 @@ int main(int argc, char **argv){
         ToKittiTrajectoryFormat(estimated);
     }
 
-    // compute rmse
-    double rmse = 0;
+    // compute rmse&rte
+    double rmse = 0.0;
+    double rte = 0.0;
     for (size_t i = 0; i < estimated.size(); i++) {
         Sophus::SE3d p1 = estimated[i], p2 = groundtruth[i];
         double error = (p2.inverse() * p1).log().norm();
         rmse += error * error;
+
+        if(i == 0){
+            continue;
+        }
+        rte += ComputeRTE(groundtruth[i], estimated[i], groundtruth[i-1], estimated[i-1]);
     }
+
     rmse = rmse / double(estimated.size());
     rmse = sqrt(rmse);
     cout << "Absolute trajectory error (RMSE) = " << rmse << endl;
 
+    rte = rte / double(estimated.size());
+    cout << "Average relative translation error = " << rte << " (meter)" << endl;
     DrawTrajectory(groundtruth, estimated);
     
     return EXIT_SUCCESS;
